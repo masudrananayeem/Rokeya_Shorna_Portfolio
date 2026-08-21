@@ -153,7 +153,7 @@ function Services() {
 
 function Resume() {
   return <><PageHero kicker="07 / RESUME" title={<>A concise record of <em>the journey.</em></>} sub="A web version of the professional CV, with a print-friendly layout."/>
-  <section className="resume-actions container"><button className="magnetic-btn" onClick={()=>window.print()}><Download size={16}/> Print / Save PDF</button><a className="magnetic-btn secondary" href={`mailto:${profile.email}`}><Mail size={16}/> Contact</a></section>
+  <section className="resume-actions container"><motion.button className="magnetic-btn" onClick={()=>window.print()} whileHover={{scale:1.03}} whileTap={{scale:0.95}}><Download size={16}/> Print / Save PDF</motion.button><motion.a className="magnetic-btn secondary" href={`mailto:${profile.email}`} whileHover={{scale:1.03}} whileTap={{scale:0.95}}><Mail size={16}/> Contact</motion.a></section>
   <section className="resume-sheet container">
     <div className="resume-head"><div><h2>{profile.name}</h2><p>{profile.role}</p><span>{profile.email} • {profile.phone} • {profile.location}</span></div><div className="resume-mark">RS</div></div>
     <div className="resume-columns"><div>
@@ -173,17 +173,37 @@ function ResumeSection({title,children}) { return <section className="resume-sec
 
 function Contact() {
   const [status,setStatus] = useState("");
+  const [sending,setSending] = useState(false);
   async function submit(e) {
     e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.currentTarget));
     const endpoint = import.meta.env.VITE_CONTACT_ENDPOINT;
-    if (!endpoint) { setStatus("Demo mode: connect VITE_CONTACT_ENDPOINT to send this form."); return; }
-    setStatus("Sending…");
-    try { await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(Object.fromEntries(new FormData(e.currentTarget)))}); setStatus("Message sent successfully."); e.currentTarget.reset(); }
-    catch { setStatus("Something went wrong. Please email directly."); }
+    setSending(true);
+    if (endpoint) {
+      setStatus("Sending…");
+      try {
+        await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
+        setStatus("Message sent successfully.");
+        e.currentTarget.reset();
+      } catch {
+        setStatus("Something went wrong. Opening your email client instead…");
+        openMailFallback(data);
+      }
+    } else {
+      setStatus("Opening your email client with this message…");
+      openMailFallback(data);
+      e.currentTarget.reset();
+    }
+    setSending(false);
+  }
+  function openMailFallback(data) {
+    const subject = encodeURIComponent(data.subject || "Portfolio contact");
+    const body = encodeURIComponent(`${data.message || ""}\n\n— ${data.name || ""} (${data.email || ""})`);
+    window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`;
   }
   return <><PageHero kicker="08 / CONTACT" title={<>Let's build something <em>meaningful.</em></>} sub="For research, development, collaboration or a thoughtful technology conversation, send a message."/>
   <section className="section-pad"><div className="container contact-grid"><div><span className="eyebrow">GET IN TOUCH</span><h2>Open to thoughtful<br/><em>conversations.</em></h2><div className="contact-info"><a href={`mailto:${profile.email}`}><Mail/> {profile.email}</a><a href={profile.linkedin} target="_blank" rel="noreferrer"><Linkedin/> LinkedIn</a><a href={profile.github} target="_blank" rel="noreferrer"><Github/> GitHub</a><span><MapPin/> {profile.location}</span></div></div>
-  <form className="contact-form" onSubmit={submit}><label>Name<input name="name" required placeholder="Your name"/></label><label>Email<input type="email" name="email" required placeholder="you@example.com"/></label><label>Subject<input name="subject" required placeholder="What would you like to discuss?"/></label><label>Message<textarea name="message" required rows="7" placeholder="Tell me a little about your idea..."/></label><button className="magnetic-btn" type="submit">Send message <ArrowUpRight size={16}/></button>{status && <p className="form-status">{status}</p>}</form></div></section></>;
+  <motion.form className="contact-form" onSubmit={submit} initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true, amount:0.3}} transition={{duration:.5,ease:"easeOut"}}><label>Name<input name="name" required placeholder="Your name"/></label><label>Email<input type="email" name="email" required placeholder="you@example.com"/></label><label>Subject<input name="subject" required placeholder="What would you like to discuss?"/></label><label>Message<textarea name="message" required rows="7" placeholder="Tell me a little about your idea..."/></label><motion.button className="magnetic-btn" type="submit" disabled={sending} whileHover={{scale:1.03}} whileTap={{scale:0.95}}>{sending ? "Sending…" : "Send message"} <ArrowUpRight size={16}/></motion.button><AnimatePresence>{status && <motion.p className="form-status" initial={{opacity:0,y:-6}} animate={{opacity:1,y:0}} exit={{opacity:0}}>{status}</motion.p>}</AnimatePresence></motion.form></div></section></>;
 }
 
 function NotFound() {

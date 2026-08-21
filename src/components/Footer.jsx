@@ -1,5 +1,6 @@
 import { ArrowUpRight, Mail, Github, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { profile } from "../data/portfolio";
 
 export default function Footer() {
@@ -7,7 +8,14 @@ export default function Footer() {
     <div className="container">
       <div className="footer-top">
         <div><span className="eyebrow">LET'S CONNECT</span><h2>Have an idea?<br/><em>Let's talk.</em></h2></div>
-        <a className="circle-arrow" href={`mailto:${profile.email}`} aria-label="Email"><ArrowUpRight size={28}/></a>
+        <motion.a
+          className="circle-arrow"
+          href={`mailto:${profile.email}`}
+          aria-label="Email"
+          whileHover={{ scale: 1.1, rotate: 45 }}
+          whileTap={{ scale: 0.92 }}
+          transition={{ type: "spring", stiffness: 300, damping: 18 }}
+        ><ArrowUpRight size={28}/></motion.a>
       </div>
       <div className="footer-grid">
         <div><p className="muted">A research-driven technology professional exploring intelligent systems, web development and meaningful digital experiences.</p></div>

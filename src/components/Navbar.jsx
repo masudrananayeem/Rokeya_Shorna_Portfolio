@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowUpRight, Sun, Moon } from "lucide-react";
 
 const links = [
@@ -16,20 +17,72 @@ export default function Navbar({ theme, setTheme }) {
         <div className="desktop-nav">
           {links.map(([label, href]) => <NavLink key={href} to={href} className={({isActive}) => isActive ? "active" : ""}>{label}</NavLink>)}
           <Link className="nav-resume" to="/resume">Resume <ArrowUpRight size={14}/></Link>
-          <button className="icon-btn" aria-label="Toggle theme" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-            {theme === "dark" ? <Sun size={17}/> : <Moon size={17}/>}
-          </button>
+          <motion.button
+            className="icon-btn"
+            aria-label="Toggle theme"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.88, rotate: 180 }}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={theme}
+                initial={{ opacity: 0, rotate: -90, scale: 0.6 }}
+                animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                exit={{ opacity: 0, rotate: 90, scale: 0.6 }}
+                transition={{ duration: 0.25 }}
+                style={{ display: "grid", placeItems: "center" }}
+              >
+                {theme === "dark" ? <Sun size={17}/> : <Moon size={17}/>}
+              </motion.span>
+            </AnimatePresence>
+          </motion.button>
         </div>
-        <button className="mobile-menu" aria-label="Open menu" onClick={() => setOpen(true)}><Menu /></button>
+        <motion.button
+          className="mobile-menu"
+          aria-label="Open menu"
+          onClick={() => setOpen(true)}
+          whileTap={{ scale: 0.88 }}
+        >
+          <Menu />
+        </motion.button>
       </nav>
-      {open && <div className="mobile-overlay">
-        <div className="mobile-top"><span className="brand"><span>RS</span><b>ROKEYA SHORNA</b></span><button className="icon-btn" onClick={() => setOpen(false)}><X/></button></div>
-        <div className="mobile-links">
-          {links.map(([label, href], i) => <NavLink key={href} to={href} onClick={() => setOpen(false)} style={{"--i": i}}>{label}</NavLink>)}
-          <NavLink to="/resume" onClick={() => setOpen(false)}>Resume ↗</NavLink>
-        </div>
-        <p className="mobile-foot">RESEARCH • CODE • DESIGN</p>
-      </div>}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="mobile-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="mobile-top">
+              <span className="brand"><span>RS</span><b>ROKEYA SHORNA</b></span>
+              <motion.button className="icon-btn" onClick={() => setOpen(false)} whileTap={{ scale: 0.85, rotate: 90 }}><X/></motion.button>
+            </div>
+            <div className="mobile-links">
+              {links.map(([label, href], i) => (
+                <motion.div
+                  key={href}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05, duration: 0.4, ease: "easeOut" }}
+                >
+                  <NavLink to={href} onClick={() => setOpen(false)}>{label}</NavLink>
+                </motion.div>
+              ))}
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: links.length * 0.05, duration: 0.4, ease: "easeOut" }}
+              >
+                <NavLink to="/resume" onClick={() => setOpen(false)}>Resume ↗</NavLink>
+              </motion.div>
+            </div>
+            <p className="mobile-foot">RESEARCH • CODE • DESIGN</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
