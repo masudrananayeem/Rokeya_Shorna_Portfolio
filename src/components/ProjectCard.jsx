@@ -5,12 +5,13 @@ import { motion } from "framer-motion";
 const MotionLink = motion.create(Link);
 
 export default function ProjectCard({ project, index }) {
+  const direction = index % 2 === 0 ? "left" : "right";
   return (
     <MotionLink
       to={`/projects/${project.slug}`}
       className="project-card"
       data-cursor
-      data-reveal
+      data-reveal={direction}
       whileHover={{ y: -8 }}
       whileTap={{ scale: 0.98 }}
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
