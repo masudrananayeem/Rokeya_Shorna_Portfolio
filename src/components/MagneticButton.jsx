@@ -31,8 +31,9 @@ export default function MagneticButton({ children, to, href, secondary = false }
   };
 
   if (href) {
+    const isExternal = /^https?:\/\//i.test(href);
     return (
-      <motion.a {...motionProps} href={href} target="_blank" rel="noreferrer">
+      <motion.a {...motionProps} href={href} {...(isExternal ? { target: "_blank", rel: "noreferrer" } : {})}>
         {children}<ArrowUpRight size={16} />
       </motion.a>
     );
