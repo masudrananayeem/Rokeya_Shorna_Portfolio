@@ -140,23 +140,55 @@ function PageHero({kicker,title,sub}) {
 }
 
 function About() {
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const handlePhotoMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    setTilt({ x: py * -10, y: px * 14 });
+  };
+  const resetTilt = () => setTilt({ x: 0, y: 0 });
+
   return <><PageHero kicker="01 / ABOUT" title={<>A researcher with a <em>builder's mindset.</em></>} sub="A Computer Science professional whose journey spans research, programming, web development, technical support and teaching."/>
   <section className="section-pad"><div className="container about-intro-grid">
-    <div className="about-photo-wrap" data-reveal="left"><img src="/assets/profile.png" alt="Rokeya Shorna"/><div><span>ROKEYA SHORNA</span><small>Computer Science & Engineering</small></div></div>
+    <motion.div
+      className="about-photo-wrap"
+      data-reveal="left"
+      animate={{ y: [0, -12, 0] }}
+      transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
+      onMouseMove={handlePhotoMove}
+      onMouseLeave={resetTilt}
+      style={{ perspective: 900 }}
+    >
+      <motion.div
+        className="about-photo-ring"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
+      />
+      <motion.div
+        className="about-photo-tilt"
+        animate={{ rotateX: tilt.x, rotateY: tilt.y }}
+        transition={{ type: "spring", stiffness: 120, damping: 14 }}
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        <img src="/assets/profile.png" alt="Rokeya Shorna"/>
+        <div><span>ROKEYA SHORNA</span><small>Computer Science & Engineering</small></div>
+      </motion.div>
+    </motion.div>
     <div><span className="eyebrow">PROFILE</span><h2 className="about-big" data-reveal>Building useful systems with <em>research-led thinking.</em></h2><p className="large-muted" data-reveal>{profile.summary}</p><TagList items={profile.interests} className="interest-list"/></div>
   </div></section>
   <section className="section-pad"><div className="container two-col">
-    <div><SectionTitle number="01" eyebrow="EDUCATION" title="Foundations."/><div className="timeline">{education.map((e,i)=><article key={i} data-reveal={i%2===0?"left":"right"}><span>{e.period}</span><h3>{e.degree}</h3><b>{e.institution}</b><p>Result: {e.result}. {e.detail}</p>{e.coursework && <TagList items={e.coursework} className="course-list"/>}</article>)}</div></div>
-    <div className="about-card" data-reveal><span className="eyebrow">COURSEWORK & INTERESTS</span><TagList items={coursework} className="course-list"/><div className="about-contact"><MapPin size={16}/>{profile.location}<br/><Mail size={16}/>{profile.email}<br/><span className="birth-line">Born {profile.birth}</span></div></div>
+    <div><SectionTitle number="01" eyebrow="EDUCATION" title="Foundations."/><div className="timeline">{education.map((e,i)=><motion.article key={i} data-reveal={i%2===0?"left":"right"} whileHover={{ x: i%2===0?6:-6 }} transition={{type:"spring",stiffness:300,damping:20}}><motion.span initial={{opacity:0,scale:.6}} whileInView={{opacity:1,scale:1}} viewport={{once:true,amount:.7}} transition={{type:"spring",stiffness:260,damping:16}} style={{display:"inline-block"}}>{e.period}</motion.span><h3>{e.degree}</h3><b>{e.institution}</b><p>Result: {e.result}. {e.detail}</p>{e.coursework && <TagList items={e.coursework} className="course-list"/>}</motion.article>)}</div></div>
+    <motion.div className="about-card" data-reveal whileHover={{ y: -6 }} transition={{type:"spring",stiffness:260,damping:20}}><span className="eyebrow">COURSEWORK & INTERESTS</span><TagList items={coursework} className="course-list"/><div className="about-contact"><MapPin size={16}/>{profile.location}<br/><Mail size={16}/>{profile.email}<br/><span className="birth-line">Born {profile.birth}</span></div></motion.div>
   </div></section>
-  <section className="section-pad light-section"><div className="container"><SectionTitle number="02" eyebrow="LEADERSHIP & COMMUNITY" title="Beyond the job title." text="Leadership, volunteering and community activities documented in the CV."/><div className="leadership-grid">{leadership.map((x,i)=><article key={x[0]+x[1]} data-reveal={i%2===0?"left":"right"}><span>0{String(i+1).padStart(2,'0')}</span><small>{x[2]}</small><h3>{x[0]}</h3><b>{x[1]}</b><p>{x[3]}</p></article>)}</div></div></section>
-  <section className="section-pad"><div className="container"><SectionTitle number="03" eyebrow="WORKSHOPS & SEMINARS" title="Always learning."/><div className="workshop-grid">{workshops.map((w,i)=><article key={w} data-reveal={i%2===0?"left":"right"}><span>0{String(i+1).padStart(2,'0')}</span><p>{w}</p></article>)}</div></div></section>
+  <section className="section-pad light-section"><div className="container"><SectionTitle number="02" eyebrow="LEADERSHIP & COMMUNITY" title="Beyond the job title." text="Leadership, volunteering and community activities documented in the CV."/><div className="leadership-grid">{leadership.map((x,i)=><motion.article key={x[0]+x[1]} data-reveal={i%2===0?"left":"right"} whileHover={{ y: -8, scale: 1.015 }} transition={{type:"spring",stiffness:280,damping:22}}><motion.span initial={{opacity:0,y:10}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.7}} transition={{duration:.4}}>0{String(i+1).padStart(2,'0')}</motion.span><small>{x[2]}</small><h3>{x[0]}</h3><b>{x[1]}</b><p>{x[3]}</p></motion.article>)}</div></div></section>
+  <section className="section-pad"><div className="container"><SectionTitle number="03" eyebrow="WORKSHOPS & SEMINARS" title="Always learning."/><div className="workshop-grid">{workshops.map((w,i)=><motion.article key={w} data-reveal={i%2===0?"left":"right"} whileHover={{ y: -6, borderColor: "var(--accent)" }} transition={{type:"spring",stiffness:280,damping:22}}><motion.span initial={{opacity:0,rotate:-15,scale:.6}} whileInView={{opacity:1,rotate:0,scale:1}} viewport={{once:true,amount:.7}} transition={{type:"spring",stiffness:260,damping:16}} style={{display:"inline-block"}}>0{String(i+1).padStart(2,'0')}</motion.span><p>{w}</p></motion.article>)}</div></div></section>
   </>;
 }
 
 function Skills() {
   return <><PageHero kicker="02 / SKILLS" title={<>Tools for turning <em>questions into systems.</em></>} sub="A focused toolkit spanning programming, web technologies, databases, research and visual communication."/>
-  <section className="section-pad"><div className="container skills-layout">{Object.entries(skills).map(([cat,items],i)=><article className="skill-block" data-reveal={i%2===0?"left":"right"} key={cat}><span className="skill-no">0{i+1}</span><h3>{cat}</h3><TagList items={items} className="skill-tags"/></article>)}</div></section>
+  <section className="section-pad"><div className="container skills-layout">{Object.entries(skills).map(([cat,items],i)=><motion.article className="skill-block" data-reveal={i%2===0?"left":"right"} key={cat} whileHover={{ y: -8, backgroundColor: "var(--surface)" }} transition={{type:"spring",stiffness:260,damping:22}}><motion.span className="skill-no" initial={{opacity:0,scale:.5}} whileInView={{opacity:1,scale:1}} viewport={{once:true,amount:.7}} transition={{type:"spring",stiffness:260,damping:16}} style={{display:"inline-block"}}>0{i+1}</motion.span><h3>{cat}</h3><TagList items={items} className="skill-tags"/></motion.article>)}</div></section>
   <section className="section-pad dark-panel"><div className="container split"><h2 data-reveal>Technical depth is useful.<br/><em>Curiosity is essential.</em></h2><p className="large-muted" data-reveal>I enjoy learning new tools when they help solve a real problem better, more clearly or more efficiently.</p></div></section></>;
 }
 
@@ -170,23 +202,23 @@ function ProjectDetail() {
   const p = projects.find(x => x.slug === slug);
   if (!p) return <NotFound />;
   return <><PageHero kicker={`PROJECT / ${p.category}`} title={<>{p.title} <em>in detail.</em></>} sub={p.summary}/>
-    <section className="project-detail-hero"><div className="container"><img src={p.image} alt={p.title}/></div></section>
+    <motion.section className="project-detail-hero" initial={{opacity:0,scale:1.04}} animate={{opacity:1,scale:1}} transition={{duration:.7,ease:[0.16,1,0.3,1]}}><div className="container"><img src={p.image} alt={p.title}/></div></motion.section>
     <section className="section-pad"><div className="container detail-grid">
-      <aside><span className="eyebrow">TECHNOLOGY</span><TagList items={p.stack} className="detail-tags"/><span className="eyebrow detail-label">YEAR</span><p>{p.year}</p><span className="eyebrow detail-label">TEAM</span><p>{p.team}</p></aside>
-      <article className="detail-copy"><span className="eyebrow">01 / THE PROBLEM</span><h2>{p.problem}</h2><span className="eyebrow">02 / THE APPROACH</span><p>{p.solution}</p><span className="eyebrow">03 / OUTCOME</span><p>{p.outcome}</p><Link className="text-link" to="/projects">← Back to projects</Link></article>
+      <motion.aside initial={{opacity:0,x:-30}} whileInView={{opacity:1,x:0}} viewport={{once:true,amount:.4}} transition={{duration:.6,ease:"easeOut"}}><span className="eyebrow">TECHNOLOGY</span><TagList items={p.stack} className="detail-tags"/><span className="eyebrow detail-label">YEAR</span><p>{p.year}</p><span className="eyebrow detail-label">TEAM</span><p>{p.team}</p></motion.aside>
+      <motion.article className="detail-copy" initial={{opacity:0,y:30}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.3}} transition={{duration:.6,delay:.1,ease:"easeOut"}}><span className="eyebrow">01 / THE PROBLEM</span><h2>{p.problem}</h2><span className="eyebrow">02 / THE APPROACH</span><p>{p.solution}</p><span className="eyebrow">03 / OUTCOME</span><p>{p.outcome}</p><Link className="text-link" to="/projects">← Back to projects</Link></motion.article>
     </div></section>
   </>;
 }function Experience() {
   return <><PageHero kicker="04 / EXPERIENCE" title={<>Work shaped by <em>responsibility.</em></>} sub="Professional experience across GIS-based development, web development, technical support and teaching."/>
-  <section className="section-pad"><div className="container experience-list">{experiences.map((e,i)=><article className="experience-item" data-reveal={i%2===0?"left":"right"} key={e.role}><div className="exp-year">{e.period}</div><div><span className="eyebrow">0{i+1}</span><h2>{e.role}</h2><h4>{e.organization}</h4><p>{e.description}</p></div></article>)}</div></section></>;
+  <section className="section-pad"><div className="container experience-list">{experiences.map((e,i)=><motion.article className="experience-item" data-reveal={i%2===0?"left":"right"} key={e.role} whileHover={{ x: i%2===0?8:-8 }} transition={{type:"spring",stiffness:260,damping:22}}><div className="exp-year">{e.period}</div><div><motion.span className="eyebrow" initial={{opacity:0,scale:.5}} whileInView={{opacity:1,scale:1}} viewport={{once:true,amount:.7}} transition={{type:"spring",stiffness:260,damping:16}} style={{display:"inline-block"}}>0{i+1}</motion.span><h2>{e.role}</h2><h4>{e.organization}</h4><p>{e.description}</p></div></motion.article>)}</div></section></>;
 }
 
 function Research() {
   return <><PageHero kicker="05 / RESEARCH" title={<>Questions become <em>evidence.</em></>} sub="Research interests and published work across machine learning, deep learning, Bangla NLP and data-driven methods."/>
-  <section className="section-pad"><div className="container research-intro"><div><span className="eyebrow">RESEARCH INTERESTS</span><h2>Digital image processing.<br/>Pattern recognition.<br/><em>AI & machine learning.</em></h2></div><ThreeOrb/></div></section>
-  <section className="section-pad light-section"><div className="container"><SectionTitle number="01" eyebrow="PUBLICATIONS" title="Published research."/><div className="publication-list">{publications.map((p,i)=><article key={p.title} data-reveal={i%2===0?"left":"right"}><span>0{i+1}</span><div><h3>{p.title}</h3><p>{p.venue} • {p.year}</p><a href={p.doi} target="_blank" rel="noreferrer">View DOI ↗</a></div></article>)}</div></div></section>
-  <section className="section-pad"><div className="container"><SectionTitle number="02" eyebrow="AWARDS" title="Milestones."/><div className="award-grid">{awards.map((a,i)=><div key={i} data-reveal={i%2===0?"left":"right"}><span>0{i+1}</span><p>{a}</p></div>)}</div></div></section>
-  <section className="section-pad light-section"><div className="container research-extra-grid"><div data-reveal="left"><span className="eyebrow">HOBBIES & INTERESTS</span><h2 className="extra-title">Writing. Painting.<br/><em>Graphics & design.</em></h2><TagList items={hobbies} className="hobby-tags"/></div><div data-reveal="right"><span className="eyebrow">REFERENCES</span><div className="reference-list">{references.map(r=><article key={r[0]}><h3>{r[0]}</h3><p>{r[1]}</p><a href={`mailto:${r[2]}`}>{r[2]} <ExternalLink size={13}/></a></article>)}</div></div></div></section></>;
+  <section className="section-pad"><div className="container research-intro"><motion.div initial={{opacity:0,x:-30}} whileInView={{opacity:1,x:0}} viewport={{once:true,amount:.4}} transition={{duration:.6,ease:"easeOut"}}><span className="eyebrow">RESEARCH INTERESTS</span><h2>Digital image processing.<br/>Pattern recognition.<br/><em>AI & machine learning.</em></h2></motion.div><motion.div animate={{ y: [0,-14,0] }} transition={{duration:6,repeat:Infinity,ease:"easeInOut"}}><ThreeOrb/></motion.div></div></section>
+  <section className="section-pad light-section"><div className="container"><SectionTitle number="01" eyebrow="PUBLICATIONS" title="Published research."/><div className="publication-list">{publications.map((p,i)=><motion.article key={p.title} data-reveal={i%2===0?"left":"right"} whileHover={{ x: i%2===0?8:-8 }} transition={{type:"spring",stiffness:260,damping:22}}><motion.span initial={{opacity:0,scale:.5}} whileInView={{opacity:1,scale:1}} viewport={{once:true,amount:.7}} transition={{type:"spring",stiffness:260,damping:16}} style={{display:"inline-block"}}>0{i+1}</motion.span><div><h3>{p.title}</h3><p>{p.venue} • {p.year}</p><a href={p.doi} target="_blank" rel="noreferrer">View DOI ↗</a></div></motion.article>)}</div></div></section>
+  <section className="section-pad"><div className="container"><SectionTitle number="02" eyebrow="AWARDS" title="Milestones."/><div className="award-grid">{awards.map((a,i)=><motion.div key={i} data-reveal={i%2===0?"left":"right"} whileHover={{ y: -6, scale: 1.02 }} transition={{type:"spring",stiffness:280,damping:22}}><motion.span initial={{opacity:0,rotate:-15,scale:.6}} whileInView={{opacity:1,rotate:0,scale:1}} viewport={{once:true,amount:.7}} transition={{type:"spring",stiffness:260,damping:16}} style={{display:"inline-block"}}>0{i+1}</motion.span><p>{a}</p></motion.div>)}</div></div></section>
+  <section className="section-pad light-section"><div className="container research-extra-grid"><div data-reveal="left"><span className="eyebrow">HOBBIES & INTERESTS</span><h2 className="extra-title">Writing. Painting.<br/><em>Graphics & design.</em></h2><TagList items={hobbies} className="hobby-tags"/></div><div data-reveal="right"><span className="eyebrow">REFERENCES</span><div className="reference-list">{references.map((r,i)=><motion.article key={r[0]} whileHover={{ y: -6 }} transition={{type:"spring",stiffness:260,damping:20}}><h3>{r[0]}</h3><p>{r[1]}</p><a href={`mailto:${r[2]}`}>{r[2]} <ExternalLink size={13}/></a></motion.article>)}</div></div></div></section></>;
 }
 
 function Services() {
