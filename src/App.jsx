@@ -193,7 +193,13 @@ function Skills() {
 }
 
 function Projects() {
+  const categories = [...new Set(projects.map(p => p.category))];
   return <><PageHero kicker="03 / PROJECTS" title={<>Selected work, <em>explained.</em></>} sub="Academic and software projects grounded in practical problems, research and user-focused implementation."/>
+  <motion.div className="container projects-stats" initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.6}} transition={{duration:.6,ease:"easeOut"}}>
+    <div><Counter to={projects.length}/><span>Projects shipped</span></div>
+    <div><Counter to={categories.length}/><span>Focus areas</span></div>
+    <div><Counter to={projects.reduce((a,p)=>a+(p.stack?.length||0),0)}/><span>Technologies used</span></div>
+  </motion.div>
   <section className="section-pad"><div className="container"><div className="project-grid projects-all">{projects.map((p,i)=><ProjectCard key={p.slug} project={p} index={i}/>)}</div></div></section></>;
 }
 
@@ -229,7 +235,7 @@ function Services() {
     ["04","Technical Support","Troubleshooting, maintenance and performance-focused technical assistance."]
   ];
   return <><PageHero kicker="06 / SERVICES" title={<>From idea to <em>working system.</em></>} sub="Areas where research thinking and implementation experience come together."/>
-  <section className="section-pad"><div className="container service-list">{items.map(([n,t,d],i)=><article key={n} data-reveal={i%2===0?"left":"right"}><span>{n}</span><h2>{t}</h2><p>{d}</p><motion.span whileHover={{x:6,y:-6}} transition={{type:"spring",stiffness:300,damping:15}} style={{display:"inline-flex"}}><ArrowUpRight size={22}/></motion.span></article>)}</div></section></>;
+  <section className="section-pad"><div className="container service-list">{items.map(([n,t,d],i)=><motion.article key={n} data-reveal={i%2===0?"left":"right"} whileHover={{ x: i%2===0?8:-8, borderColor:"var(--accent)" }} transition={{type:"spring",stiffness:260,damping:22}}><motion.span initial={{opacity:0,scale:.5}} whileInView={{opacity:1,scale:1}} viewport={{once:true,amount:.7}} transition={{type:"spring",stiffness:260,damping:16}} style={{display:"inline-block"}}>{n}</motion.span><h2>{t}</h2><p>{d}</p><motion.span whileHover={{x:6,y:-6}} transition={{type:"spring",stiffness:300,damping:15}} style={{display:"inline-flex"}}><ArrowUpRight size={22}/></motion.span></motion.article>)}</div></section></>;
 }
 
 function Resume() {
